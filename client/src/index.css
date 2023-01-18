@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Source+Sans+Pro:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* > * {
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: #dcdcc6;
+  background-image: url("https://picsum.photos/1600/900");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
