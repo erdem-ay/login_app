@@ -2,9 +2,10 @@ const UserModel = require("../model/User.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const ENV = require("../config");
+const otpGenerator = require("otp-generator");
 
 /** middleware for verity user */
-module.export.verifyUser = async (req, res, next) => {
+const verifyUser = async (req, res, next) => {
   try {
     const { username } = req.method == "GET" ? req.query : req.body;
 
@@ -29,7 +30,7 @@ module.export.verifyUser = async (req, res, next) => {
   "profile": ""
 }
 */
-module.export.register = async (req, res) => {
+const register = async (req, res) => {
   try {
     const { username, password, profile, email } = req.body;
 
@@ -95,7 +96,7 @@ module.export.register = async (req, res) => {
   "password" : "admin123"
 }
 */
-module.export.login = async (req, res) => {
+const login = async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -136,7 +137,7 @@ module.export.login = async (req, res) => {
 };
 
 /** GET http://localhost:8080/api/user/erdem */
-module.export.getUser = async (req, res) => {
+const getUser = async (req, res) => {
   const { username } = req.params;
 
   try {
@@ -168,7 +169,7 @@ body: {
     profile : ''
 }
 */
-module.export.updateUser = async (req, res) => {
+const updateUser = async (req, res) => {
   try {
     // const id = req.query.id
     const { userId } = req.user;
@@ -191,23 +192,51 @@ module.export.updateUser = async (req, res) => {
 };
 
 /** GET http://localhost:8080/api/genetareOTP */
-module.export.genetareOTP = async (req, res) => {
-  res.json("genetareOTP route");
+const genetareOTP = async (req, res) => {
+  req.app.locals.OTP = await otpGenerator.generate(6, {
+    lowerCaseAlphabets: false,
+    upperCaseAlphabets: false,
+    specialChars: false,
+  });
+
+  res.status(201).send({ code: req.app.locals.OTP });
 };
 
 /** GET http://localhost:8080/api/verifyOTP */
-module.export.verifyOTP = async (req, res) => {
-  res.json("verifyOTP route");
+const verifyOTP = async (req, res) => {
+  const { code } = req.query;
+  if (parseInt(req.app.locals.OTP) === parseInt(code)) {
+    req.app.locals.OTP = null; // reset the OTP value
+    req.app.locals.resetSession = true; // start session for reset password
+    return res.status(201).send({ msg: "Verify Successfully" });
+  }
+  return res.status(400).send({ error: "Invalid OTP" });
 };
 
 // successfully redirect user when OTP is valid
 /** GET: http://localhost:8080/api/createResetSession */
-module.export.createResetSession = async (req, res) => {
-  res.json("createResetSession route");
+const createResetSession = async (req, res) => {
+  if (req.app.locals.resetSession) {
+    req.app.locals.resetSession = false; // allow access to this route only once
+    return res.status(201).send({ msg: "access granted!" });
+  }
+  return res.status(440).send({ error: "Session expired!" });
 };
 
 // update the password when we have valid session
 /** PUT: http://localhost:8080/api/resetPassword */
-module.export.resetPassword = async (req, res) => {
+const resetPassword = async (req, res) => {
   res.json("resetPassword route");
+};
+
+module.exports = {
+  verifyUser,
+  register,
+  login,
+  getUser,
+  updateUser,
+  genetareOTP,
+  verifyOTP,
+  createResetSession,
+  resetPassword,
 };

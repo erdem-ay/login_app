@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-module.export.UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, "Please provide unique Username"],
@@ -23,4 +23,4 @@ module.export.UserSchema = new mongoose.Schema({
   profile: { type: String },
 });
 
-exports.default = mongoose.model.Users || mongoose.model("User", UserSchema);
+exports.default = mongoose.models.UserSchema || mongoose.model("User", UserSchema)
