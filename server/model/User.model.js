@@ -23,4 +23,4 @@ const UserSchema = new mongoose.Schema({
   profile: { type: String },
 });
 
-exports.default = mongoose.models.UserSchema || mongoose.model("User", UserSchema)
+exports.default = mongoose.models.Users || mongoose.model("User", UserSchema)

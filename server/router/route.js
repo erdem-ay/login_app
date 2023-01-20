@@ -20,6 +20,6 @@ router.route("/createResetSession").get(controller.createResetSession);
 
 /** PUT Methods */
 router.route("/uptadeuser").put(Auth, controller.updateUser);
-router.route("/resetPassword").put(controller.resetPassword);
+router.route("/resetPassword").put(controller.verifyUser, controller.resetPassword);
 
 module.exports = router;
